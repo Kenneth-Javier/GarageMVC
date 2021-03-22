@@ -218,7 +218,7 @@ namespace GarageMVC.Controllers
             else (p != null) {
                    
                 var pvv = db.ParkedVehicle.Where(v => v == p).Select(f => new ParkedVehicleViewModel
-                {
+                { 
                     Id = p.Id,
                     VehicleType = p.VehicleType,
                     RegNumber = p.RegNumber,
