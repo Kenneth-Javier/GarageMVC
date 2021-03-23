@@ -24,7 +24,7 @@ namespace GarageMVC.Controllers
         // GET: ParkedVehicles
         public async Task<IActionResult> Index(string RegNo = null)
         {
-            var pvv = updateViewContent();
+            var pvv = UpdateViewContentIQueryable();
 
             if(RegNo != null)
             {
@@ -64,52 +64,28 @@ namespace GarageMVC.Controllers
 
         // GET: ParkedVehicles/Edit/5
         [ModelNotNull]
+        [RequiredID("id")]
         public async Task<IActionResult> Edit(int? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            var p = await db.ParkedVehicle.FindAsync(id);
-
-            var pvv = updateViewContent(p);
-
-            
-            if (p == null)
-            {
-                return NotFound();
-            }
-            if (pvv == null)
-            {
-                return NotFound();
-            }
-
-            return View(nameof(Edit), await pvv.ToListAsync());
-
-
-            //var parkedVehicle = await db.ParkedVehicle.FindAsync(id);
-            //if (parkedVehicle == null)
-            //{
-            //    return NotFound();
-            //}
-            //return View(parkedVehicle);
+            ParkedVehicle p = await db.ParkedVehicle.FindAsync(id);
+            ParkedVehicleViewModel pVVM = ParkedVehicleViewModelInstance(p);
+            return View(pVVM);
         }
 
         // POST: ParkedVehicles/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [ModelNotNull]
-        [HttpPost, ActionName("Edit")]
+        [RequiredID("id")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegNumber,Color,Brand,Model,NumberOfWheels,ArrivalTime")] ParkedVehicleViewModel pVVM)
         {
-            //if (id != pVVM.Id)
-            //{
-            //    return NotFound();
-            //}
 
             bool RegNumberExist = db.ParkedVehicle.Any(v => v.Id != pVVM.Id && v.RegNumber.ToLower().Equals(pVVM.RegNumber.ToLower()));
+
+            var pv = await db.ParkedVehicle.FindAsync(id);
+            ParkedVehiclelInstance(pVVM, pv);
 
             if (RegNumberExist)
             {
@@ -119,13 +95,13 @@ namespace GarageMVC.Controllers
             {
                 try
                 {
-                    db.Update(pVVM);
-                    db.Entry(pVVM).Property("ArrivalTime").IsModified = false;
+                    db.Update(pv);
+                    db.Entry(pv).Property("ArrivalTime").IsModified = false;
                     await db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ParkedVehicleExists(pVVM.Id))
+                    if (!ParkedVehicleExists(pv.Id))
                     {
                         return NotFound();
                     }
@@ -196,42 +172,58 @@ namespace GarageMVC.Controllers
             return db.ParkedVehicle.Any(e => e.Id == id);
         }
 
-        private IQueryable<ParkedVehicleViewModel> updateViewContent(ParkedVehicle p = null)
+
+        //WHY!!!!!
+        //private IQueryable<ParkedVehicleViewModel> UpdateViewContentIQueryable()
+        //{
+        //    IQueryable<ParkedVehicleViewModel> iQpVVM = db.ParkedVehicle.Select(p => ParkedVehicleViewModelInstance(p));
+        //    return iQpVVM;
+        //}
+
+        private IQueryable<ParkedVehicleViewModel> UpdateViewContentIQueryable()
         {
-            if (p == null) {
-                var pvv = db.ParkedVehicle.Select(p => new ParkedVehicleViewModel
-                {
-
-                    Id = p.Id,
-                    VehicleType = p.VehicleType,
-                    RegNumber = p.RegNumber,
-                    Color = p.Color,
-                    Brand = p.Brand,
-                    Model = p.Model,
-                    NumberOfWheels = p.NumberOfWheels,
-                    ArrivalTime = p.ArrivalTime,
-                    ParkedTime = DateTime.Now - p.ArrivalTime
-
-                });
-                return pvv;
-            }
-            else (p != null) {
-                   
-                var pvv = db.ParkedVehicle.Where(v => v == p).Select(f => new ParkedVehicleViewModel
-                { 
-                    Id = p.Id,
-                    VehicleType = p.VehicleType,
-                    RegNumber = p.RegNumber,
-                    Color = p.Color,
-                    Brand = p.Brand,
-                    Model = p.Model,
-                    NumberOfWheels = p.NumberOfWheels,
-                    ArrivalTime = p.ArrivalTime,
-                    ParkedTime = DateTime.Now - p.ArrivalTime
-                });              
-                return pvv;
-            }
+            IQueryable<ParkedVehicleViewModel> iQpVVM = db.ParkedVehicle.Select(p => new ParkedVehicleViewModel()
+            {
+                Id = p.Id,
+                VehicleType = p.VehicleType,
+                RegNumber = p.RegNumber,
+                Color = p.Color,
+                Brand = p.Brand,
+                Model = p.Model,
+                NumberOfWheels = p.NumberOfWheels,
+                ArrivalTime = p.ArrivalTime,
+                ParkedTime = DateTime.Now - p.ArrivalTime
+            });
+            return iQpVVM;
         }
+
+        private ParkedVehicleViewModel ParkedVehicleViewModelInstance(ParkedVehicle p)
+        {
+            var pVVM = new ParkedVehicleViewModel
+            {
+                Id = p.Id,
+                VehicleType = p.VehicleType,
+                RegNumber = p.RegNumber,
+                Color = p.Color,
+                Brand = p.Brand,
+                Model = p.Model,
+                NumberOfWheels = p.NumberOfWheels,
+                ArrivalTime = p.ArrivalTime,
+                ParkedTime = DateTime.Now - p.ArrivalTime
+            };
+            return pVVM;
+        }
+
+        private void ParkedVehiclelInstance(ParkedVehicleViewModel pVVM, ParkedVehicle pv)
+        {
+            pv.VehicleType = pVVM.VehicleType;
+            pv.RegNumber = pVVM.RegNumber;
+            pv.Color = pVVM.Color;
+            pv.Brand = pVVM.Brand;
+            pv.Model = pVVM.Model;
+            pv.NumberOfWheels = pVVM.NumberOfWheels;
+        }
+      
 
     }
 }
