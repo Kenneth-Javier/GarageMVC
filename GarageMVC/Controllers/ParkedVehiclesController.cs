@@ -85,7 +85,7 @@ namespace GarageMVC.Controllers
             bool RegNumberExist = db.ParkedVehicle.Any(v => v.Id != pVVM.Id && v.RegNumber.ToLower().Equals(pVVM.RegNumber.ToLower()));
 
             var pv = await db.ParkedVehicle.FindAsync(id);
-            ParkedVehiclelInstance(pVVM, pv);
+            ParkedVehicleInstance(pVVM, pv);
 
             if (RegNumberExist)
             {
@@ -172,7 +172,6 @@ namespace GarageMVC.Controllers
             return db.ParkedVehicle.Any(e => e.Id == id);
         }
 
-
         //WHY!!!!!
         //private IQueryable<ParkedVehicleViewModel> UpdateViewContentIQueryable()
         //{
@@ -214,7 +213,7 @@ namespace GarageMVC.Controllers
             return pVVM;
         }
 
-        private void ParkedVehiclelInstance(ParkedVehicleViewModel pVVM, ParkedVehicle pv)
+        private void ParkedVehicleInstance(ParkedVehicleViewModel pVVM, ParkedVehicle pv)
         {
             pv.VehicleType = pVVM.VehicleType;
             pv.RegNumber = pVVM.RegNumber;

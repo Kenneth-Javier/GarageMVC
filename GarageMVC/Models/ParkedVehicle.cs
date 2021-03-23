@@ -1,4 +1,5 @@
 ﻿using GarageMVC.Models.DataAnnotations;
+using GarageMVC.Resources;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,9 +11,12 @@ namespace GarageMVC.Models
         [RequiredEnumAttribute]
         public VehicleType VehicleType { get; set; }
 
+        //[StringLength(maximumLength: 6, MinimumLength = 6)]
+        //[StringLength(maximumLength: 6, ErrorMessage = "Registration length must contain 6 digits", MinimumLength = 6)]
         [Required(AllowEmptyStrings = false)]
-        //[StringLength(maximumLength: 6)]
-        [StringLength(maximumLength: 6, ErrorMessage = "Registration length must contain 6 digits", MinimumLength = 6)]
+        [StringLength(maximumLength: 6, MinimumLength = 6,
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Reg")]      
         public string RegNumber { get; set; }
 
         [Required(AllowEmptyStrings = false)]
