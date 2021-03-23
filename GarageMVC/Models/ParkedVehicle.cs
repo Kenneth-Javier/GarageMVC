@@ -11,12 +11,16 @@ namespace GarageMVC.Models
         [RequiredEnumAttribute]
         public VehicleType VehicleType { get; set; }
 
-        //[StringLength(maximumLength: 6, MinimumLength = 6)]
+        //[StringLength(maximumLength:6 , MinimumLength = 6)]
         //[StringLength(maximumLength: 6, ErrorMessage = "Registration length must contain 6 digits", MinimumLength = 6)]
+        //[StringLength(maximumLength: 6, MinimumLength = 6,
+        //    ErrorMessageResourceType = typeof(ValidationMessages),
+        //    ErrorMessageResourceName = "Reg")]      
         [Required(AllowEmptyStrings = false)]
-        [StringLength(maximumLength: 6, MinimumLength = 6,
+        [StringLength(6)]
+        [RegularExpression("[A-Za-z]{3}[0-9]{2}[A-Za-z0-9]{1}",
             ErrorMessageResourceType = typeof(ValidationMessages),
-            ErrorMessageResourceName = "Reg")]      
+            ErrorMessageResourceName = "Reg")] 
         public string RegNumber { get; set; }
 
         [Required(AllowEmptyStrings = false)]

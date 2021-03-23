@@ -83,7 +83,7 @@ namespace GarageMVC.Controllers
         {
 
             bool RegNumberExist = db.ParkedVehicle.Any(v => v.Id != pVVM.Id && v.RegNumber.ToLower().Equals(pVVM.RegNumber.ToLower()));
-
+            //bool RegNumberExist2 = string.IsNullOrEmpty(pVVM.RegNumber) ? false : db.
             var pv = await db.ParkedVehicle.FindAsync(id);
             ParkedVehicleInstance(pVVM, pv);
 
